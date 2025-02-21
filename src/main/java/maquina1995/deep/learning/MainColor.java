@@ -20,7 +20,10 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
-public class Main {
+/**
+ * En esta clase se clasifican cajas por color
+ */
+public class MainColor {
 
 	public static void main(String[] args) {
 
@@ -50,6 +53,9 @@ public class Main {
 	}
 
 	private static DataSetIterator createModel() {
+		
+		System.out.println("Se empieza a crear el modelo");
+		
 		// Creamos la lista del modelo de entrenamiento
 		List<DataSet> data = new ArrayList<>();
 
@@ -97,42 +103,24 @@ public class Main {
 		// Añadimos el ejemplo y la solucion a la lista
 		data.add(new DataSet(input3, output3));
 
+		System.out.println("---------------------");
+		
 		/**
 		 * Ahora le decimos a la librería como queremos que procese los datos de
 		 * entrenamiento El numero que le ponemos indica la cantidad de elementos a
 		 * procesar a la vez
 		 */
 		DataSetIterator iterator = new ListDataSetIterator<>(data, 1);
+		
+		System.out.println("Se acabó de crear el modelo");
+		
 		return iterator;
 	}
 
-	private static void useModelForPredictions(MultiLayerNetwork model) {
-		// Objeto Rojo, Grande
-		double[] cajaAnalizar = new double[] { 1, 0, 0, 1, 0, 0 };
-
-		INDArray inputPrueba = Nd4j.create(cajaAnalizar);
-		// Le pasamos la caja y nos da la predicción
-		INDArray prediction = model.output(inputPrueba);
-
-		// Imprimimos por pantalla la predicción para cada color para esta caja
-		// obtendríamos algo parecido a esto: [1.00, 0.00, 0.00]
-		System.out.println("Predicción: " + prediction);
-
-		// Para obtener en este caso el color usaremos la siguiente línea para obtener
-		// el valor mas alto mas cercano a 1
-		int predictedClass = Nd4j.argMax(prediction, 1)
-				.getInt(0);
-
-		// Ahora para sacar de manera visual por pantalla el color de la caja creamos un
-		// array de los colores en orden RGB (Vamos el mismo orden que definimos arriba)
-		List<String> colors = List.of("Rojo", "Verde", "Azul");
-
-		// Ahora con un simple get obtendremos por pantalla el color de esa caja
-		System.out.println("Con los datos de la caja: " + Arrays.asList(cajaAnalizar) + " la clasificamos como: "
-				+ colors.get(predictedClass));
-	}
-
 	private static MultiLayerNetwork configureNeuralNet() {
+		
+		System.out.println("Se empieza a crear la red neuronal");
+		
 		// Esta variable representa la cantidad de valores que tendra el array que
 		// representara la caja en este caso entran 6 porque: 3 colores + 3 tamaños
 		int numInputs = 6;
@@ -256,10 +244,42 @@ public class Main {
 		 * aprendiendo correctamente
 		 */
 		model.setListeners(new ScoreIterationListener(10));
+		
+		System.out.println("Se creó la red neuronal");
+		
 		return model;
+	}
+	
+	private static void useModelForPredictions(MultiLayerNetwork model) {
+		// Objeto Rojo, Grande
+		double[] cajaAnalizar = new double[] { 1, 0, 0, 1, 0, 0 };
+
+		INDArray inputPrueba = Nd4j.create(cajaAnalizar);
+		// Le pasamos la caja y nos da la predicción
+		INDArray prediction = model.output(inputPrueba);
+
+		// Imprimimos por pantalla la predicción para cada color para esta caja
+		// obtendríamos algo parecido a esto: [1.00, 0.00, 0.00]
+		System.out.println("Predicción: " + prediction);
+
+		// Para obtener en este caso el color usaremos la siguiente línea para obtener
+		// el valor mas alto mas cercano a 1
+		int predictedClass = Nd4j.argMax(prediction, 1)
+				.getInt(0);
+
+		// Ahora para sacar de manera visual por pantalla el color de la caja creamos un
+		// array de los colores en orden RGB (Vamos el mismo orden que definimos arriba)
+		List<String> colors = List.of("Rojo", "Verde", "Azul");
+
+		// Ahora con un simple get obtendremos por pantalla el color de esa caja
+		System.out.println("Con los datos de la caja: " + Arrays.toString(cajaAnalizar) + " la clasificamos como: "
+				+ colors.get(predictedClass));
 	}
 
 	private static void trainingModel(DataSetIterator iterator, MultiLayerNetwork model) {
+		
+		System.out.println("Se empieza a entrenar el modelo");
+		
 		/**
 		 * Este numero representa las epocas de la red neuronal
 		 * 
@@ -278,6 +298,8 @@ public class Main {
 			// Aqui realizamos 1 epoca de entrenamiento para entrenar el modelo
 			model.fit(iterator);
 		}
+		
+		System.out.println("Ya se ha acabado de entrenar el modelo");
 	}
 
 }
